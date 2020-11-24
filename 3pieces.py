@@ -16,30 +16,7 @@ def notinboardmoves(kind,color,grid):
         moves=[]
         return moves
 
-class pawn:
-    def __init__(self, row,col,color):
-        self.row = row
-        self.col = col
-        self.color = color
-        self.kind = 'P'
 
-    def validmoves(self,grid):
-        i = self.row
-        j = self.col
-        k=1
-        moves = []
-        a,b=i,j
-        a=a-k
-        if inreach(a,b,grid,i,j) and grid[a][b]=='_':
-            moves.append([a,b])
-        b=b+1
-        if  inreach(a,b,grid,i,j) and grid[a][b]!='_':
-            moves.append([a,b])
-        b=b-2
-        if  inreach(a,b,grid,i,j) and grid[a][b]!='_':
-            moves.append([a,b])
-
-        return moves
 class rook:
     def __init__(self, row,col,color):
         self.row = row
@@ -103,7 +80,7 @@ class bishop:
         for k, l in zip([1, -1, -1, 1], [1, -1, 1, -1]):
             a = i
             b = j
-            while a>=0 and b>=0 and a<=3 and b<=3:
+            while a>=0 and b>=0 and a<=2 and b<=2:
 
                 if grid[a][b][1] == self.color and a!=i:
                     break
@@ -146,8 +123,8 @@ def printgrid():
 
 def figonboard(P,a,b):
     ar= False
-    for i in range(0,4):
-        for j in range(0,4):
+    for i in range(0,3):
+        for j in range(0,3):
             if grid[i][j]==P[a][b]:
                 ar= True
     if ar==True :
@@ -167,7 +144,7 @@ class validmoves1:
 
 def inreach(a,b,grid,i,j):
 
-    if a >= 0 and a <= 3 and b>=0 and b<=3 and grid[i][j][1]!=grid[a][b][1]:
+    if a >= 0 and a <= 2 and b>=0 and b<=2 and grid[i][j][1]!=grid[a][b][1]:
         return True
     else:
         return False

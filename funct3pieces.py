@@ -1,39 +1,27 @@
 import os
 import sys
-import pygame
 import game
 import random
 
 def evaluatefigures(grid,color):
     points=0
-    ppW = [[-2, -2, -2, -2], [-1, -1, -1, -1], [0, 0, 0, 0], [1, 1, 1, 1]]
-    ppB = [[1, 1, 1, 1], [0, 0, 0, 0], [-1, -1, -1, -1], [-2, -2, -2, -2]]
-    kp = [[2, 2, 2, 2], [2, 3, 3, 2], [2, 3, 3, 2], [2, 2, 2, 2]]
-    rp = [[4, 4, 4, 4], [4, 4, 4, 4], [4, 4, 4, 4], [4, 4, 4, 4]]
-    bp = [[2, 2, 2, 2], [2, 3, 3, 2], [2, 3, 3, 2], [2, 2, 2, 2]]
+    
+    kp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    rp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    bp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     if color == 'W':
         color2='B'
     else:
         color2='W'
 
-    for i in [0,1,2,3]:
-        for j in [0,1,2,3]:
-            if grid[i][j]==('P',color):
-                if color=='W':
-                    points = points + ppW[i][j]
-                else:
-                    points = points + ppB[i][j]
+    for i in [0,1,2]:
+        for j in [0,1,2]:
             if grid[i][j]==('R',color):
                 points = points + rp[i][j]
             if grid[i][j]==('K',color):
                 points = points + kp[i][j]
             if grid[i][j]==('B',color):
                 points = points + bp[i][j]
-            if grid[i][j]==('P',color2) :
-                if color2=='W':
-                    points = points - ppW[i][j]
-                else:
-                    points = points - ppB[i][j]
             if grid[i][j]==('R',color2) :
                 points = points - rp[i][j]
             if grid[i][j]==('K',color2) :
@@ -44,18 +32,50 @@ def evaluatefigures(grid,color):
 
 def iswinning(grid,color):
     a=False
-    for x in [0,1,2,3]:
-        for y in [0,1,2,3]:
-            if grid[i][j][1]==color:
-
-
+    i=0
+    j=0
+    k=0
+    l=0
+    for x in [0,1,2]:
+        5
+        
+        if grid[x][x][1]==color:
+                k=k+1
+                if k==3 :
+                    return True
+        else
+                k = 0
+                
+        if grid[2-x][x][1]==color:
+                l=l+1
+                if l==3 :
+                    return True
+        else
+                l = 0
+        for y in [0,1,2]:
+            
+            if grid[x][y][1]==color:
+                i=i+1
+                if i==3 :
+                    return True
+            else
+                i = 0
+            if grid[y][x][1]==color:
+                j=j+1
+                if j==3: 
+                    return True
+            else 
+                j=0
+        i=0
+        j=0
+    returnt False
 
 def rowevalcoleval(grid,color,z):
     points=0
-    for x in range(0,4,1):
+    for x in range(0,3,1):
         k=0
         l=0
-        for y in range(0,4,1):
+        for y in range(0,3,1):
             if z==True:
                 i=x
                 j=y
@@ -69,15 +89,13 @@ def rowevalcoleval(grid,color,z):
         if l==2 :
             points=points+2
         if l==3 :
-            points=points+5
-        if l==4 :
-            points=100
+            points=points+ 100
+       
         if k == 2:
-            points = points - 2
+            points = points - 3
         if k == 3:
-            points = points -5
-        if k == 4:
-            points = -100
+            points = points -100
+        
     return points
 def diageval(grid,color,z):
     points=0
@@ -91,15 +109,13 @@ def diageval(grid,color,z):
     if l==2 :
             points=points+2
     if l==3 :
-            points=points+5
-    if l==4 :
-            points=100
+            points=points+100
+
     if k == 2:
-            points = points - 2
+            points = points - 3
     if k == 3:
-            points = points -5
-    if k == 4:
-            points = -100
+            points = points -100
+    
     return points
 def evaluateboard(grid,color):
     points=0
@@ -107,7 +123,7 @@ def evaluateboard(grid,color):
     points=points+a
     a=rowevalcoleval(grid,color,z=False)
     points=points+a
-    a=diageval(grid,color,3)
+    a=diageval(grid,color,2)
     points=points+a
     a=diageval(grid,color,0)
     points=points+a
@@ -118,15 +134,15 @@ def evaluateboard(grid,color):
 def notinboardmoves(kind,color,grid):
     k=0
 
-    for i in range(0,4,1):
-        for j in range(0,4,1):
+    for i in range(0,3,1):
+        for j in range(0,3,1):
             if grid[i][j]==(kind,color):
                 k=1
     if k==0:
         moves=[]
 
-        for i in range(0,4,1):
-            for j in range(0,4,1):
+        for i in range(0,3,1):
+            for j in range(0,3,1):
                 if grid[i][j]==('_','_'):
                     moves.append([i,j])
         return moves
@@ -135,8 +151,8 @@ def notinboardmoves(kind,color,grid):
         return moves
 
 
-P=[[("P","B"),("K","B"),("B","B"),("R","B")],[("P","W"),("K","W"),("B","W"),("R","W")]]
-grid=[[("_","_")]*4 for n in range(4)]
+P=[[("K","B"),("B","B"),("R","B")],[("K","W"),("B","W"),("R","W")]]
+grid=[[("_","_")]*3 for n in range(3)]
 
 
 
@@ -146,34 +162,32 @@ grid1=[[(350,250),(450,250),(550,250),(650,250)],[(350,350),(450,350),(550,350),
 
 def printg(grid):
     print('                 ')
-    for i in range(0, 4, 1):
+    for i in range(0, 3, 1):
         print(grid[i])
 
 
 def getpawnpos(grid,kind,color):
-    for i in [0,1,2,3]:
-        for j in [0,1,2,3]:
+    for i in [0,1,2]:
+        for j in [0,1,2]:
             if grid[i][j]==(kind,color):
                 return i,j
 
 def allpossiblemoves(color,grid):
-    a=[0,0,0,0]
+    a=[0,0,0]
     a[0]=notinboardmoves('R',color,grid)
-    a[1]=notinboardmoves('P',color,grid)
-    a[2]=notinboardmoves('K',color,grid)
-    a[3]=notinboardmoves('B',color,grid)
+    
+    a[1]=notinboardmoves('K',color,grid)
+    a[2]=notinboardmoves('B',color,grid)
     if a[0]==[]:
         c,b=getpawnpos(grid,'R',color)
         a[0]=game.rook(c,b,color).validmoves(grid)
+    
     if a[1] == []:
-        c, b = getpawnpos(grid, 'P', color)
-        a[1] = game.pawn(c,b,color).validmoves(grid)
-    if a[2] == []:
         c, b = getpawnpos(grid,'K', color)
-        a[2] = game.knight(c,b,color).validmoves(grid)
-    if a[3] == []:
+        a[1] = game.knight(c,b,color).validmoves(grid)
+    if a[2] == []:
         c, b = getpawnpos(grid,'B', color)
-        a[3] = game.bishop(c,b,color).validmoves(grid)
+        a[2] = game.bishop(c,b,color).validmoves(grid)
     return a
 
 
@@ -197,7 +211,7 @@ while winning=='no':
 
 def updategrid(grid,x,y,kind,color):
 
-    q = [[1] * 4 for n in range(4)]
+    q = [[1] * 3 for n in range(3)]
     for i in [0, 1, 2]:
         for j in [0, 1, 2]:
             q[i][j] = grid[i][j]
@@ -222,11 +236,12 @@ def minimax(grid,depth,color,alpha,beta,maximazingplayer):
         color2='B'
     else:
         color2='W'
+    if iswinning(grid,color2)
     if maximazingplayer:
         maxing=-10000
         ar=allpossiblemoves(color,grid)
 
-        for i in [0,1,2,3]:
+        for i in [0,1,2]:
             for posmoves in ar[i]:
 
                 if i==0:
@@ -239,22 +254,15 @@ def minimax(grid,depth,color,alpha,beta,maximazingplayer):
                     alpha = max(alpha, eval)
 
 
+            
                 if i==1:
-                    y='P'
-                    q=updategrid(grid,posmoves[0],posmoves[1],y,color)
-
-                    eval=minimax(q,depth-1,color,alpha,beta,False)
-                    maxing = max(maxing, eval)
-                    alpha = max(alpha, eval)
-
-                if i==2:
                     y='K'
                     q=updategrid(grid,posmoves[0],posmoves[1],y,color)
                     eval=minimax(q,depth-1,color,alpha,beta,False)
                     maxing = max(maxing, eval)
                     alpha = max(alpha, eval)
 
-                if i==3:
+                if i==2:
                     y='B'
                     q=updategrid(grid,posmoves[0],posmoves[1],y,color)
                     eval=minimax(q,depth-1,color,alpha,beta,False)
@@ -277,21 +285,16 @@ def minimax(grid,depth,color,alpha,beta,maximazingplayer):
                     mining = min(mining, eval)
                     beta = min(beta, eval)
 
-                if i == 1:
-                    y = 'P'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
-                    eval = minimax(q, depth - 1, color,alpha,beta, True)
-                    mining = min(mining, eval)
-                    beta = min(beta, eval)
+               
 
-                if i == 2:
+                if i == 1:
                     y = 'K'
                     q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
                     eval = minimax(q, depth - 1, color,alpha,beta, True)
                     mining = min(mining, eval)
                     beta = min(beta, eval)
 
-                if i == 3:
+                if i == 2:
                     y = 'B'
                     q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
                     eval = minimax(q, depth - 1, color,alpha,beta, True)
@@ -324,20 +327,8 @@ def bestmove(grid,depth,color,alpha,beta):
                         bestmoves3 = y
                     alpha = max(alpha, eval)
 
-
+                    
                 if i==1:
-                    y='P'
-                    q=updategrid(grid,posmoves[0],posmoves[1],y,color)
-
-                    eval=minimax(q,depth-1,color,alpha,beta,False)
-                    if eval >= maxing:
-                        maxing = eval
-                        bestmoves1 = posmoves[0]
-                        bestmoves2 = posmoves[1]
-                        bestmoves3 = y
-                    alpha = max(alpha, eval)
-
-                if i==2:
                     y='K'
                     q=updategrid(grid,posmoves[0],posmoves[1],y,color)
                     eval=minimax(q,depth-1,color,alpha,beta,False)
@@ -348,7 +339,7 @@ def bestmove(grid,depth,color,alpha,beta):
                         bestmoves3 = y
                     alpha = max(alpha, eval)
 
-                if i==3:
+                if i==2:
                     y='B'
                     q=updategrid(grid,posmoves[0],posmoves[1],y,color)
                     eval=minimax(q,depth-1,color,alpha,beta,False)
@@ -371,7 +362,6 @@ import time
 #print((time.time()-spot))
 grid[1][2]=('R','W')
 grid[0][1]=('K','B')
-grid[3][3]=('K','W')
 grid[1][1]=('B','B')
 sp=bestmove(grid, 3, 'B', -10000, 10000)
 print(sp)
