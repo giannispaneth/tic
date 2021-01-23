@@ -40,7 +40,6 @@ def iswinning(grid, color):
     k = 0
     l = 0
     for x in [0, 1, 2]:
-        5
 
         if grid[x][x][1] == color:
             k = k+1
@@ -93,12 +92,12 @@ def rowevalcoleval(grid, color, z):
         if l == 2:
             points = points+3
         if l == 3:
-            points = points + 100
+            points = points+100
 
         if k == 2:
-            points = points - 3
+            points = points-3
         if k == 3:
-            points = points - 100
+            points = points-100
 
     return points
 
@@ -107,7 +106,11 @@ def diageval(grid, color, z):
     points = 0
     k = 0
     l = 0
-    for i, j in zip([0, 1, 2], [z-0, z-1, z-2]):
+    if z == 0:
+        r = 1
+    else:
+        r = -1
+    for i, j in zip([0, 1, 2], [z+0*r, z+1*r, z+2*r]):
         if grid[i][j][1] == color:
             l = l+1
         elif grid[i][j][1] != color and grid[i][j][1] != "_":
@@ -118,9 +121,9 @@ def diageval(grid, color, z):
         points = points+100
 
     if k == 2:
-        points = points - 3
+        points = points-3
     if k == 3:
-        points = points - 100
+        points = points-100
 
     return points
 
@@ -228,8 +231,200 @@ def updategrid(grid, x, y, kind, color):
     return q
 
 
-def minimax(grid, depth, color, alpha, beta, maximazingplayer):
+def bestmove2(grid, depth, color, color2, alpha, beta, col):
+    if color2 == 'W':
+        Col = 'B'
+    else:
+        Col = 'W'
+    maxing = -100000
+
+    ar = allpossiblemoves(color2, grid)
+    s = [0, 1, 2]
+    random.shuffle(s)
+    o = 0
+    for i in s:
+
+        for posmoves in ar[i]:
+            if posmoves != []:
+                o = o+1
+            if i == 0:
+                y = 'R'
+
+            if i == 1:
+                y = 'K'
+
+            if i == 2:
+                y = 'B'
+
+            q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
+            if iswinning(q, color2):
+                return posmoves[0], posmoves[1], y, color2
+
+            if o == 1:
+
+                eval = -negamax(q, depth-1, -color, Col, -beta, -alpha, col)
+            else:
+                eval = -negamax(q, depth-1, -color, Col, -alpha-1, -alpha, col)
+                if alpha < eval and eval < beta:
+                    eval = -negamax(q, depth-1, -color, Col, -beta, -eval, col)
+            if eval > maxing:
+                maxing = eval
+                bestmoves1 = posmoves[0]
+                bestmoves2 = posmoves[1]
+                bestmoves3 = y
+
+            alpha = max(alpha, eval)
+            if alpha >= beta:
+                break
+        if beta <= alpha:
+            break
+    return bestmoves1, bestmoves2, bestmoves3, color2
+
+
+def negamax(grid, depth, color, color2, alpha, beta, col):
+    if color2 == 'W':
+        Col = 'B'
+    else:
+        Col = 'W'
     if depth == 0:
+
+        req = evaluateboard(grid, col)
+        return req * color
+    if iswinning(grid, Col):
+        req = evaluateboard(grid, col)
+        return req * color
+    if iswinning(grid, color2):
+        req = evaluateboard(grid, col)
+        return req * color
+    ar = allpossiblemoves(color2, grid)
+    s = [0, 1, 2]
+    random.shuffle(s)
+    o = 0
+    for i in s:
+
+        for posmoves in ar[i]:
+            if posmoves != []:
+                o = o+1
+            if i == 0:
+                y = 'R'
+
+            if i == 1:
+                y = 'K'
+
+            if i == 2:
+                y = 'B'
+
+            q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
+
+            if o == 1:
+
+                eval = -negamax(q, depth-1, -color, Col, -beta, -alpha, col)
+            else:
+                eval = -negamax(q, depth-1, -color, Col, -alpha-1, -alpha, col)
+                if alpha < eval and eval < beta:
+                    eval = -negamax(q, depth-1, -color, Col, -beta, -eval, col)
+            alpha = max(alpha, eval)
+            if alpha >= beta:
+                break
+        if alpha >= beta:
+            break
+    return alpha
+
+
+def negamax2(grid, depth, color, color2):
+
+    alpha = -100000
+    if color == 1 and color2 == 'W':
+        Col = 'B'
+    elif color == -1 and color2 == 'B':
+        Col = 'B'
+
+    else:
+        Col = 'W'
+    if Col == 'W':
+        Col2 = 'B'
+    else:
+        Col2 = 'W'
+
+    if depth == 0:
+
+        req = evaluateboard(grid, color2)
+        return req * -color
+    if iswinning(grid, Col):
+        req = evaluateboard(grid, color2)
+        return req * -color
+    if iswinning(grid, Col2):
+        req = evaluateboard(grid, color2)
+        return req * color
+    ar = allpossiblemoves(color2, grid)
+    s = [0, 1, 2]
+    random.shuffle(s)
+    o = 0
+    for i in s:
+
+        for posmoves in ar[i]:
+            if posmoves != []:
+                o = o+1
+            if i == 0:
+                y = 'R'
+
+            if i == 1:
+                y = 'K'
+
+            if i == 2:
+                y = 'B'
+
+            q = updategrid(grid, posmoves[0], posmoves[1], y, Col2)
+
+            eval = -negamax2(q, depth-1, -color, Col)
+            alpha = max(alpha, eval)
+    return alpha
+
+
+def bestmove3(grid, depth, color, color2):
+
+    alpha = -1000000
+
+    ar = allpossiblemoves(color2, grid)
+    s = [0, 1, 2]
+    random.shuffle(s)
+    o = 0
+    for i in s:
+
+        for posmoves in ar[i]:
+            if posmoves != []:
+                o = o+1
+            if i == 0:
+                y = 'R'
+
+            if i == 1:
+                y = 'K'
+
+            if i == 2:
+                y = 'B'
+
+            q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
+            if iswinning(grid, color2):
+                bestmoves1 = posmoves[0]
+                bestmoves2 = posmoves[1]
+                bestmoves3 = y
+
+                return bestmoves1, bestmoves2, bestmoves3, color
+            eval = -negamax2(q, depth-1, -color, color2)
+            if eval > alpha:
+                bestmoves1 = posmoves[0]
+                bestmoves2 = posmoves[1]
+                bestmoves3 = y
+
+            alpha = max(alpha, eval)
+
+    return bestmoves1, bestmoves2, bestmoves3, color2
+
+
+def minimax(grid, depth, color, alpha, beta, maximazingplayer):
+
+    if depth == 0:
+
         req = evaluateboard(grid, color)
 
         return req
@@ -238,6 +433,11 @@ def minimax(grid, depth, color, alpha, beta, maximazingplayer):
         color2 = 'B'
     else:
         color2 = 'W'
+
+    if iswinning(grid, color):
+        req = evaluateboard(grid, color)
+
+        return req
     if iswinning(grid, color2):
         req = evaluateboard(grid, color)
 
@@ -246,64 +446,58 @@ def minimax(grid, depth, color, alpha, beta, maximazingplayer):
     if maximazingplayer:
         maxing = -10000
         ar = allpossiblemoves(color, grid)
-
-        for i in [0, 1, 2]:
+        s = [0, 1, 2]
+        random.shuffle(s)
+        for i in s:
             for posmoves in ar[i]:
 
                 if i == 0:
                     y = 'R'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color)
-
-                    eval = minimax(q, depth-1, color, alpha, beta, False)
-
-                    maxing = max(maxing, eval)
-                    alpha = max(alpha, eval)
 
                 if i == 1:
                     y = 'K'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color)
-                    eval = minimax(q, depth-1, color, alpha, beta, False)
-                    maxing = max(maxing, eval)
-                    alpha = max(alpha, eval)
 
                 if i == 2:
                     y = 'B'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color)
-                    eval = minimax(q, depth-1, color, alpha, beta, False)
-                    maxing = max(maxing, eval)
-                    alpha = max(alpha, eval)
+                q = updategrid(grid, posmoves[0], posmoves[1], y, color)
+
+                eval = minimax(q, depth-1, color, alpha, beta, False)
+
+                maxing = max(maxing, eval)
+                alpha = max(alpha, eval)
                 if beta <= alpha:
+
                     break
+
             if beta <= alpha:
                 break
         return maxing
     else:
         mining = 10000
         ar = allpossiblemoves(color2, grid)
-        for i in [0, 1, 2]:
+        s = [0, 1, 2]
+        random.shuffle(s)
+        for i in s:
             for posmoves in ar[i]:
                 if i == 0:
+
                     y = 'R'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
-                    eval = minimax(q, depth - 1, color, alpha, beta, True)
-                    mining = min(mining, eval)
-                    beta = min(beta, eval)
 
                 if i == 1:
                     y = 'K'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
-                    eval = minimax(q, depth - 1, color, alpha, beta, True)
-                    mining = min(mining, eval)
-                    beta = min(beta, eval)
 
                 if i == 2:
                     y = 'B'
-                    q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
-                    eval = minimax(q, depth - 1, color, alpha, beta, True)
-                    mining = min(mining, eval)
-                    beta = min(beta, eval)
+
+                q = updategrid(grid, posmoves[0], posmoves[1], y, color2)
+
+                eval = minimax(q, depth - 1, color, alpha, beta, True)
+                mining = min(mining, eval)
+                beta = min(beta, eval)
                 if beta <= alpha:
+
                     break
+
             if beta <= alpha:
                 break
         return mining
@@ -313,81 +507,109 @@ def bestmove(grid, depth, color, alpha, beta):
 
     maxing = -10000
     ar = allpossiblemoves(color, grid)
-
-    for i in [0, 1, 2]:
+    s = [0, 1, 2]
+    random.shuffle(s)
+    for i in s:
         for posmoves in ar[i]:
 
             if i == 0:
                 y = 'R'
-                q = updategrid(grid, posmoves[0], posmoves[1], y, color)
-
-                eval = minimax(q, depth-1, color, alpha, beta, False)
-
-                if eval >= maxing:
-                    maxing = eval
-                    bestmoves1 = posmoves[0]
-                    bestmoves2 = posmoves[1]
-                    bestmoves3 = y
-                alpha = max(alpha, eval)
 
             if i == 1:
                 y = 'K'
-                q = updategrid(grid, posmoves[0], posmoves[1], y, color)
-                eval = minimax(q, depth-1, color, alpha, beta, False)
-                if eval >= maxing:
-                    maxing = eval
-                    bestmoves1 = posmoves[0]
-                    bestmoves2 = posmoves[1]
-                    bestmoves3 = y
-                alpha = max(alpha, eval)
 
             if i == 2:
                 y = 'B'
-                q = updategrid(grid, posmoves[0], posmoves[1], y, color)
-                eval = minimax(q, depth-1, color, alpha, beta, False)
-                if eval >= maxing:
-                    maxing = eval
-                    bestmoves1 = posmoves[0]
-                    bestmoves2 = posmoves[1]
-                    bestmoves3 = y
-                alpha = max(alpha, eval)
+
+            q = updategrid(grid, posmoves[0], posmoves[1], y, color)
+            if iswinning(q, color):
+                return posmoves[0], posmoves[1], y, color
+            eval = minimax(q, depth-1, color, alpha, beta, False)
+
+            if eval > maxing:
+                maxing = eval
+                bestmoves1 = posmoves[0]
+                bestmoves2 = posmoves[1]
+                bestmoves3 = y
+
+            alpha = max(alpha, eval)
             if beta <= alpha:
+
                 break
         if beta <= alpha:
             break
     return bestmoves1, bestmoves2, bestmoves3, color
 
 
-#spot = time.time()
+# spot = time.time()
 # print((time.time()-spot))
+grid[0][0] = ('_', '_')
+grid[2][0] = ('_', '_')
 grid[1][2] = ('_', '_')
-grid[0][1] = ('_', '_')
-grid[1][1] = ('_', '_')
-sp = bestmove(grid, 3, 'B', -10000, 10000)
-print(sp)
-al = minimax(grid, 3, 'B', -10000, 10000, True)
+grid[2][1] = ('_', '_')
 
-ase = evaluateboard(grid, 'B')
+sp2 = bestmove(grid, 3, 'B', -10000, 10000)
+print(sp2)
+sp3 = minimax(grid, 3, 'B', -100000, 100000, True)
+sp = negamax(grid, 3, 1, 'B', - 100000, 100000, 'B')
+print(sp, sp3)
+ase = evaluateboard(grid, 'W')
+are = allpossiblemoves('B', grid)
+ame = bestmove2(grid, 3, 1, 'W', -100000, 100000, 'W')
+print(ame)
 
-
-notend = True
+notend = False
+notend2 = False
+notend3 = True
 i = 1
 while(notend):
     if (i % 2) != 0:
-        a = [0, 0, 0, 0]
-        a = input("enter valid move").split()
-        print(a)
-        a[0] = int(a[0])
-        a[1] = int(a[1])
-        print(a)
-        k2 = (a[2], a[3])
+
+        a = bestmove(grid, 2, 'W', -10000, 10000)
         grid = updategrid(grid, a[0], a[1], a[2], a[3])
-        grid[a[0]][a[1]] = k2
         printg(grid)
         i = i+1
+        if iswinning(grid, 'W'):
+            notend = False
     else:
         a = bestmove(grid, 5, 'B', -10000, 10000)
         k1 = (a[2], a[3])
         grid = updategrid(grid, a[0], a[1], a[2], a[3])
         printg(grid)
         i = i+1
+        if iswinning(grid, 'B'):
+            notend = False
+while(notend2):
+    if (i % 2) != 0:
+
+        a = bestmove2(grid, 2, 1, 'W', -100000, 100000, 'W')
+        grid = updategrid(grid, a[0], a[1], a[2], a[3])
+        printg(grid)
+        i = i+1
+        if iswinning(grid, 'W'):
+            notend2 = False
+    else:
+        a = bestmove2(grid, 4, 1, 'B', -100000, 100000, 'B')
+        k1 = (a[2], a[3])
+        grid = updategrid(grid, a[0], a[1], a[2], a[3])
+        printg(grid)
+        i = i+1
+        if iswinning(grid, 'B'):
+            notend2 = False
+while(notend3):
+    if (i % 2) != 0:
+
+        a = bestmove3(grid, 2, 1, 'W')
+        grid = updategrid(grid, a[0], a[1], a[2], a[3])
+        printg(grid)
+        i = i+1
+        if iswinning(grid, 'W'):
+            notend3 = False
+    else:
+        a = bestmove3(grid, 4, 1, 'B')
+        k1 = (a[2], a[3])
+        grid = updategrid(grid, a[0], a[1], a[2], a[3])
+        printg(grid)
+        i = i+1
+        if iswinning(grid, 'B'):
+            notend3 = False
